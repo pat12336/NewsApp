@@ -2,6 +2,7 @@ package com.example.rkjc.news_app_2;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,43 +11,47 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ListIterator;
 
 
 public class NewsRecyclerViewAdapter  extends RecyclerView.Adapter<NewsRecyclerViewAdapter.NewsItemViewHolder> {
 
-    final private ListItemClickListener listener;
-    ArrayList<NewsItem> mRepos;
+    private List<NewsItem> items;
+    private Context mContext;
 
-    public NewsRecyclerViewAdapter(ListItemClickListener listener, ArrayList<NewsItem> Repos) {
-        this.listener = listener;
-        this.mRepos = Repos;
+    NewsRecyclerViewAdapter(Context context, List<NewsItem> items){
+        this.mContext = context;
+        this.items = items;
     }
 
-    public interface ListItemClickListener{
-        void onListItemClick(int clickedIndex);
-    }
     @NonNull
     @Override
     public NewsItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        Context context = parent.getContext();
-        LayoutInflater inflater = LayoutInflater.from(context);
-        boolean shouldAttachToParentImmediately = false;
-
-        View view = inflater.inflate(R.layout.news_item, parent, shouldAttachToParentImmediately);
-        NewsItemViewHolder viewHolder = new NewsItemViewHolder(view);
-        return viewHolder;
+        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        View view =layoutInflater.inflate(R.layout.news_item, parent, false);
+        return new NewsItemViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(NewsItemViewHolder holder, int position) {
-        holder.bind(position);
+    public void onBindViewHolder(@NonNull NewsItemViewHolder holder, final int position) {
+       holder.bind(position);
+
     }
 
     @Override
     public int getItemCount() {
-        return this.mRepos.size();
+        if(items != null)
+            return items.size();
+        else
+            return 0;
     }
+
+    void setItems(List<NewsItem> items){
+        this.items = items;
+        notifyDataSetChanged();
+    }
+
     public class NewsItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         TextView title;
         TextView description;
@@ -54,25 +59,35 @@ public class NewsRecyclerViewAdapter  extends RecyclerView.Adapter<NewsRecyclerV
 
         public NewsItemViewHolder(View itemView) {
             super(itemView);
-            title = (TextView) itemView.findViewById(R.id.title);
-            description = (TextView) itemView.findViewById(R.id.description);
-            date = (TextView) itemView.findViewById((R.id.date));
+            title = itemView.findViewById(R.id.title);
+            description = itemView.findViewById(R.id.description);
+            date = itemView.findViewById((R.id.date));
             itemView.setOnClickListener(this);
         }
 
         void bind(final int listIndex) {
-            NewsItem item = mRepos.get(listIndex);
+            NewsItem item = items.get(listIndex);
             System.out.println(item.getTitle());
             title.setText(item.getTitle());
             description.setText(item.getDescription());
             date.setText(item.getPublishedAt());
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String urlString = items.get(listIndex).getUrl();
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(urlString));
+                    mContext.startActivity(browserIntent);
+                }
+            });
 
         }
 
         @Override
         public void onClick(View view) {
             int clickPosition = getAdapterPosition();
-            listener.onListItemClick(clickPosition);
         }
     }
+
+    
+
 }

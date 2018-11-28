@@ -1,14 +1,41 @@
 package com.example.rkjc.news_app_2;
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
+
+@Entity(tableName = "news_item")
 public class NewsItem {
 
+
+
+    @PrimaryKey(autoGenerate = true)
+    private int id;
+    @NonNull
     private String title;
+    @NonNull
     private String author;
+    @NonNull
     private String description;
+    @NonNull
     private String url;
+    @NonNull
     private String urlToImage;
+    @NonNull
     private String publishedAt;
 
+    public NewsItem(int id, String title, String author, String description, String url, String urlToImage, String publishedAt) {
+        this.id = id;
+        this.title = title;
+        this.author = author;
+        this.description = description;
+        this.url = url;
+        this.urlToImage = urlToImage;
+        this.publishedAt = publishedAt;
+    }
+
+    @Ignore
     public NewsItem(String title, String author, String description, String url, String urlToImage, String publishedAt) {
         this.title = title;
         this.author = author;
@@ -16,6 +43,14 @@ public class NewsItem {
         this.url = url;
         this.urlToImage = urlToImage;
         this.publishedAt = publishedAt;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getTitle() {
