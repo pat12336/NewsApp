@@ -88,6 +88,6 @@ public class NewsRecyclerViewAdapter  extends RecyclerView.Adapter<NewsRecyclerV
         }
     }
 
-    
+
 
 }
